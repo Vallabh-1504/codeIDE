@@ -39,7 +39,7 @@ export const executeUserCode = (jobId: string, code: string): Promise<ExecutionR
             --memory 100m \
             -v "${OUTPUT_DIR}:/app" \
             cpp-runner-image \
-            /bin/sh -c "g++ ${fileName} -o ${outName} && ./${outName}"`;
+            /bin/sh -c "g++ ${fileName} -o /tmp/${outName} && /tmp/${outName}"`;
 
         console.log(`Executing job ${jobId}`);
 
