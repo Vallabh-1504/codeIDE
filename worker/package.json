@@ -7,6 +7,7 @@
     "build": "tsc -b",
     "start": "node dist/src/index.js",
     "dev": "ts-node src/index.ts",
+    "build:runner": "docker build -t cee-image .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
