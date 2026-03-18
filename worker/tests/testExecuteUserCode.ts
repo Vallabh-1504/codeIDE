@@ -1,6 +1,6 @@
-import { executeUserCode } from "./executeUserCode";
+import { executeUserCode } from "../src/executeUserCode";
 
-
+// a simple program test
 async function testExecuteUserCode1(){
     const testCode = `
         #include <iostream>
@@ -20,7 +20,7 @@ async function testExecuteUserCode1(){
     }
 };
 
-
+// infinite loop test
 async function testExecuteUserCode2(){
     const testCode = `
         #include <iostream>

@@ -41,7 +41,7 @@ export const executeUserCode = (jobId: string, code: string): Promise<ExecutionR
             cpp-runner-image \
             /bin/sh -c "g++ ${fileName} -o /tmp/${outName} && /tmp/${outName}"`;
 
-        console.log(`Executing job ${jobId}`);
+        console.log(`[worker] Executing job ${jobId}`);
 
         // 3. Execute Docker command with timeout of 5 sec, timeout to check for TLE error
         exec(dockerCommand, {timeout: 5000}, (error, stdout, stderr) => { 
