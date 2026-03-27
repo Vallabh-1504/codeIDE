@@ -1,13 +1,34 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Editor } from '@monaco-editor/react';
 import axios from 'axios';
+import {io, Socket} from 'socket.io-client';
 
-const CodeEditor = () =>{
+interface CodeEditorProps{
+    roomId: string;
+}
+
+const CodeEditor: React.FC<CodeEditorProps> = ({roomId}) =>{
     const [code, setCode] = useState<string>("");
     const [output, setOutput] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
+    const [socket, setSocket] = useState<Socket | null>(null);
+
+    // Socket Connection
+    useEffect(() =>{
+        const newSocket = io('http://localhost:3000');
+        setSocket(newSocket);
+
+        newSocket.on('connect', () =>{
+            console.log('Connected to socket:', newSocket.id);
+            newSocket.emit('join-room', roomId);
+        });
+
+        return () =>{
+            newSocket.disconnect();
+        };
+    }, [roomId]);
 
     const runCode = async () =>{
         setLoading(true);

@@ -2,6 +2,8 @@ import express, {Request, Response, NextFunction} from 'express';
 import { Queue } from 'bullmq';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import http from 'http';
+import { Server } from 'socket.io';
 
 dotenv.config();
 
@@ -9,6 +11,15 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+// http server and attaching socket.io
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"],
+    }
+});
 
 const PORT = Number(process.env.PORT) || 3000;
 const REDIS_PORT = Number(process.env.REDIS_PORT) || 6379;
@@ -22,6 +33,21 @@ const codeExecutionQueue = new Queue(QUEUE_NAME, {
     }
 });
 
+// socket.io connection
+io.on('connection', (socket) =>{
+    console.log(`User Connected:${socket.id}`);
+
+    socket.on('join-room', (roomId) =>{
+        socket.join(roomId);
+        console.log(`User ${socket.id} joined room ${roomId}`);
+    });
+
+    socket.on('disconnect', () =>{
+        console.log(`User disconnected: ${socket.id}`);
+    });
+});
+
+// API endpoints
 app.get('/', (req: Request, res: Response) =>{
     res.status(200).json({ message: "server is running on PORT:", PORT });
 });
@@ -81,6 +107,6 @@ app.get('/status/:id', async (req, res) => {
     }
 });
 
-app.listen(PORT, () =>{
+server.listen(PORT, () =>{
     console.log(`API Server running on port ${PORT}`);
 });
