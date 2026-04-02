@@ -1,5 +1,5 @@
 import express, {Request, Response, NextFunction} from 'express';
-import { Queue } from 'bullmq';
+import { Queue, QueueEvents } from 'bullmq';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import http from 'http';
@@ -12,6 +12,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+
 // http server and attaching socket.io
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -22,6 +23,7 @@ const io = new Server(server, {
 });
 
 const PORT = Number(process.env.PORT) || 3000;
+
 const REDIS_PORT = Number(process.env.REDIS_PORT) || 6379;
 const REDIS_HOST = process.env.REDIS_HOST || 'localhost';
 
@@ -30,6 +32,64 @@ const codeExecutionQueue = new Queue(QUEUE_NAME, {
     connection:{
         host: REDIS_HOST,
         port: REDIS_PORT,
+    }
+});
+
+// Create QueueEvents to listen for job completion
+const queueEvents = new QueueEvents(QUEUE_NAME, {
+    connection:{
+        host: REDIS_HOST,
+        port: REDIS_PORT,
+    }
+});
+
+// Listen for job completion and broadcast results to the room
+queueEvents.on('completed', async ({ jobId, returnvalue }: any) =>{
+    console.log(`[server] Job ${jobId} completed.`);
+    
+    try {
+        const job = await codeExecutionQueue.getJob(jobId);
+        if(job){
+            const { roomId } = job.data;
+            
+            // parse returnvalue if it's a string, otherwise fallback to job.returnvalue, BullMQ behaviour
+            let result = typeof returnvalue === 'string' ? JSON.parse(returnvalue) : returnvalue;
+            result = result || job.returnvalue;
+            
+            // Broadcast execution result to all clients in the room
+            io.to(roomId).emit('execution-result', {
+                jobId: jobId,
+                success: result?.success,
+                output: result?.output,
+                error: result?.error
+            });
+        }
+    }
+    catch(err){
+        console.error(`[server] Error broadcasting job ${jobId} completion:`, err);
+    }
+});
+
+// Listen for job failure and broadcast error to the room
+queueEvents.on('failed', async ({ jobId, failedReason }: any) =>{
+    console.log(`[server] Job ${jobId} failed.`);
+    
+    try{
+        const job = await codeExecutionQueue.getJob(jobId);
+        if(job){
+            const { roomId } = job.data;
+            
+            // Broadcast execution error to all clients in the room
+            io.to(roomId).emit('execution-result', {
+                jobId: jobId,
+                success: false,
+                output: '',
+                error: failedReason
+            });
+        }
+    }
+    catch(err){
+        console.error(`[server] Error broadcasting job ${jobId} failure:`, err);
     }
 });
 
@@ -47,22 +107,33 @@ io.on('connection', (socket) =>{
     });
 });
 
-// API endpoints
+// api routes
+
 app.get('/', (req: Request, res: Response) =>{
     res.status(200).json({ message: "server is running on PORT:", PORT });
 });
 
 app.post('/run', async (req: Request, res: Response, next: NextFunction) =>{
-    const {code} = req.body;
+    const {code, roomId} = req.body;
 
     if(!code){
         return res.status(400).json({ error: "Code is required" });
     }
 
-    try{
-        const job = await codeExecutionQueue.add('execution-job', { code: code });
+    if(!roomId){
+        return res.status(400).json({ error: "Room ID is required" });
+    }
 
-        console.log(`[server] ${job.id} added to queue.`);
+    try{
+        const job = await codeExecutionQueue.add('execution-job', { code: code, roomId: roomId });
+
+        console.log(`[server] ${job.id} added to queue for room ${roomId}.`);
+
+        // Broadcast "running" status to all clients in the room
+        io.to(roomId).emit('execution-started', {
+            jobId: job.id,
+            status: 'running'
+        });
 
         res.status(202).json({
             jobId: job.id,
@@ -107,6 +178,6 @@ app.get('/status/:id', async (req, res) => {
     }
 });
 
-server.listen(PORT, () =>{
+server.listen(PORT, () => {
     console.log(`API Server running on port ${PORT}`);
 });
