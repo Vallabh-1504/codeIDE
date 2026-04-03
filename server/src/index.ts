@@ -22,7 +22,7 @@ const io = new Server(server, {
     }
 });
 
-const PORT = Number(process.env.PORT) || 3000;
+const PORT = Number(process.env.PORT) || 3001;
 
 const REDIS_PORT = Number(process.env.REDIS_PORT) || 6379;
 const REDIS_HOST = process.env.REDIS_HOST || 'localhost';

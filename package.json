@@ -1,0 +1,27 @@
+{
+  "name": "codestudio",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:server": "npm run dev --prefix server",
+    "dev:worker": "npm run dev --prefix worker",
+    "dev:yjs": "cd frontend && npx y-websocket --port 1234",
+    "dev": "concurrently -c \"cyan,magenta,yellow,blue\" -n \"FRONTEND,SERVER,WORKER,YJS\" \"npm run dev:frontend\" \"npm run dev:server\" \"npm run dev:worker\" \"npm run dev:yjs\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vallabh-1504/codeIDE.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Vallabh-1504/codeIDE/issues"
+  },
+  "homepage": "https://github.com/Vallabh-1504/codeIDE#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
