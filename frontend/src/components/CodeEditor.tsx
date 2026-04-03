@@ -19,6 +19,8 @@ const TEST_CODE = `
         cout << "hello world" << endl;
     }`;
 
+const SERVER_PORT = process.env.NEXT_PUBLIC_SERVER_PORT || 3001;
+
 const CodeEditor: React.FC<CodeEditorProps> = ({ roomId }) => {
     const [output, setOutput] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
@@ -26,7 +28,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ roomId }) => {
 
     // Socket Connection for code execution results
     useEffect(() => {
-        const newSocket = io('http://localhost:3000');
+        const newSocket = io(`http://localhost:${SERVER_PORT}`);
 
         newSocket.on('connect', () =>{
             console.log('Connected to socket:', newSocket.id);
@@ -97,7 +99,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ roomId }) => {
 
         // 2. Submit the code to endpoint (with roomId)
         try{
-            const response = await axios.post('http://localhost:3000/run', {
+            const response = await axios.post(`http://localhost:${SERVER_PORT}/run`, {
                 code: currentCode,
                 roomId: roomId,
             });
