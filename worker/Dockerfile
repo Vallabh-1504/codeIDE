@@ -7,6 +7,6 @@
 
 FROM alpine:latest
 
-RUN apk add --no-cache g++ make
+RUN apk add --no-cache g++ make python3
 
 WORKDIR /app

@@ -13,7 +13,7 @@ export const worker = new Worker(QUEUE_NAME, async (job) =>{
     }
 
     try {
-        const result = await executeUserCode(job.id || 'unknown', code);
+        const result = await executeUserCode(job.id || 'unknown', code, job.data.language);
         console.log(`[Worker] ${job.id} Finished. Success: ${result.success}`);
 
         return result; 
