@@ -114,10 +114,14 @@ app.get('/', (req: Request, res: Response) =>{
 });
 
 app.post('/run', async (req: Request, res: Response, next: NextFunction) =>{
-    const {code, roomId} = req.body;
+    const {code, roomId, language, stdin} = req.body;
 
     if(!code){
         return res.status(400).json({ error: "Code is required" });
+    }
+
+    if(!language){
+        return res.status(400).json({ error: "Language is required" });
     }
 
     if(!roomId){
@@ -125,7 +129,12 @@ app.post('/run', async (req: Request, res: Response, next: NextFunction) =>{
     }
 
     try{
-        const job = await codeExecutionQueue.add('execution-job', { code: code, roomId: roomId });
+        const job = await codeExecutionQueue.add('execution-job', { 
+            code: code, 
+            roomId: roomId, 
+            language: language,
+            stdin: stdin || "" 
+        });
 
         console.log(`[server] ${job.id} added to queue for room ${roomId}.`);
 

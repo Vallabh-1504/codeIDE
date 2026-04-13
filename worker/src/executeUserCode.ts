@@ -22,7 +22,8 @@ interface  LanguageConfig{
 const LANGUAGES: Record<string, LanguageConfig> = {
     cpp: {
         extension: 'cpp',
-        getCommand: (fileName, outName) => `g++ ${fileName} -o ${outName} && ./${outName}`
+        // Reverting flags: Compiler warnings cannot catch runtime I/O failures
+        getCommand: (fileName, outName) => `g++ -O2 ${fileName} -o ${outName} && ./${outName}`
     },
     python: {
         extension: 'py',
@@ -31,7 +32,7 @@ const LANGUAGES: Record<string, LanguageConfig> = {
 };
 
 // 2. Main function for execution engine
-export const executeUserCode = (jobId: string, code: string, language: string): Promise<ExecutionResult> => {
+export const executeUserCode = (jobId: string, code: string, language: string, stdin: string): Promise<ExecutionResult> => {
     return new Promise((resolve, reject) => {
         const config = LANGUAGES[language];
 
@@ -45,21 +46,24 @@ export const executeUserCode = (jobId: string, code: string, language: string): 
 
         const fileName = `${jobId}_user_code.${config.extension}`;
         const outName = `${jobId}_user_code.out`; 
+        const inputName = `${jobId}_input.txt`;
         const filePath = path.join(OUTPUT_DIR, fileName);        
+        const inputPath = path.join(OUTPUT_DIR, inputName);
 
-        // 1. write user' code to file
+        // 1. write user' code and input to file system
         try{
             fs.writeFileSync(filePath, code);
+            fs.writeFileSync(inputPath, stdin);
         }
         catch(err){
             return resolve({
                 success: false,
                 output: "",
-                error: "Failed to write code to file system."
+                error: "Failed to write code/input to file system."
             });
         }
 
-        // 2. Construct Docker Command
+        // 2. Construct Docker Command (inject the stdin via shell redirection `<`)
         const runCommand = config.getCommand(fileName, outName);
         
         const dockerCommand = `docker run --rm \
@@ -67,14 +71,14 @@ export const executeUserCode = (jobId: string, code: string, language: string): 
             --memory 100m \
             -v "${OUTPUT_DIR}:/app" \
             cee-image \
-            /bin/sh -c "${runCommand}"`;
+            /bin/sh -c "${runCommand} < ${inputName}"`;
 
         console.log(`[worker] Executing job ${jobId}`);
 
         // 3. Execute Docker command with timeout of 5 sec, timeout to check for TLE error
         exec(dockerCommand, {timeout: 5000}, (error, stdout, stderr) => { 
 
-            // delete file after execution
+            // delete files after execution
             try{
                 if(fs.existsSync(filePath)){
                     fs.unlinkSync(filePath);
@@ -85,9 +89,12 @@ export const executeUserCode = (jobId: string, code: string, language: string): 
                     fs.unlinkSync(outPath);
                 }
 
+                if(fs.existsSync(inputPath)){
+                    fs.unlinkSync(inputPath);
+                }
             }
             catch(cleanUpError){
-                console.error(`[worker] Failed to cleanup file ${fileName}`);
+                console.error(`[worker] Failed to cleanup files for ${fileName}`);
             }
 
             if(error){
