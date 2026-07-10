@@ -18,7 +18,7 @@ export const getLanguageExtension = (language: string): string | null => {
 };
 
 // 2. Main function for execution engine
-export const executeCode = (jobDir: string, language: string): Promise<ExecutionResult> => {
+export const executePlaygroundJobSandbox = (jobDir: string, language: string): Promise<ExecutionResult> => {
     return new Promise((resolve, reject) => {
         const config = LANGUAGES[language];
 

@@ -1,7 +1,7 @@
 import { Job } from 'bullmq';
 import { PlaygroundJobData, ExecutionResult } from '../types';
-import { createJobFiles, cleanupJobFiles } from '../services/FileService';
-import { executeCode, getLanguageExtension } from '../services/ExecutionService';
+import { createPlaygroundJobFiles, cleanupPlaygroundJobFiles } from '../services/PlaygroundFileService';
+import { executePlaygroundJobSandbox, getLanguageExtension } from '../services/ExecutionService';
 
 export const processPlaygroundJob = async (job: Job<PlaygroundJobData>): Promise<ExecutionResult> => {
     const { code, language, stdin = '' } = job.data;
@@ -15,11 +15,11 @@ export const processPlaygroundJob = async (job: Job<PlaygroundJobData>): Promise
     }
 
     // Step 1: Create isolated environment
-    const { jobDir } = await createJobFiles(jobId, extension, code, stdin);
+    const { jobDir } = await createPlaygroundJobFiles(jobId, extension, code, stdin);
 
     try {
         // Step 2: Execute code in sandbox
-        const result = await executeCode(jobDir, language);
+        const result = await executePlaygroundJobSandbox(jobDir, language);
         console.log(`[JobHandler] Job ${jobId} finished. Success: ${result.success}`);
         return result;
     }
@@ -29,6 +29,6 @@ export const processPlaygroundJob = async (job: Job<PlaygroundJobData>): Promise
     } 
     finally {
         // Step 3: Always Cleanup
-        await cleanupJobFiles(jobId);
+        await cleanupPlaygroundJobFiles(jobId);
     }
 };

@@ -4,7 +4,7 @@ import path from 'path';
 // centralized temp folder at the root of your project
 const TEMP_DIR = path.resolve(__dirname, '../../temp');
 
-export const createJobFiles = async (jobId: string, extension: string, code: string, stdin: string = '') => {
+export const createPlaygroundJobFiles = async (jobId: string, extension: string, code: string, stdin: string = '') => {
     // 1. Create isolated directory for this specific job
     const jobDir = path.join(TEMP_DIR, jobId);
     await fs.mkdir(jobDir, { recursive: true });
@@ -21,7 +21,7 @@ export const createJobFiles = async (jobId: string, extension: string, code: str
     return { jobDir, codeFilePath, inputFilePath, outFilePath };
 };
 
-export const cleanupJobFiles = async (jobId: string) => {
+export const cleanupPlaygroundJobFiles = async (jobId: string) => {
     const jobDir = path.join(TEMP_DIR, jobId);
     try {
         // Nuke the entire directory and everything inside it cleanly

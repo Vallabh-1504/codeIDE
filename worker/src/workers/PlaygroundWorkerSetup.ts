@@ -1,7 +1,7 @@
 import { Worker, Job } from 'bullmq';
 import { ENV } from '../config/env';
 import { redisConnection } from '../config/redis';
-import { processPlaygroundJob } from '../handlers/JobHandler';
+import { processPlaygroundJob } from '../handlers/PlaygroundJobHandler';
 import { PlaygroundJobData } from '../types';
 
 const QUEUE_NAME = ENV.PLAYGROUND_QUEUE_NAME;
