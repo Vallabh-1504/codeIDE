@@ -2,8 +2,8 @@ import { Job } from 'bullmq';
 import { JudgeJobData } from '../types';
 import { TestCase } from '../models/Testcase';
 import { Question } from '../models/Question';
-import { createJudgeJobFiles, cleanupJudgeJobFiles } from '../services/JudgeFileService';
-// import { executeJudgeSandbox } from '../services/judgeExecutionService';
+import { createJudgeJobFiles, cleanupJudgeJobFiles } from '../services/JudgeJobFileService';
+import { executeJudgeJobSandbox } from '../services/JudgeJobSandboxService';
 
 export const processJudgeJob = async (job: Job<JudgeJobData>) => {
     const { jobType, questionId, language, code } = job.data;
@@ -43,10 +43,8 @@ export const processJudgeJob = async (job: Job<JudgeJobData>) => {
         const { jobDir }  = await createJudgeJobFiles(jobId, language, code, testCasesToEvaluate);
 
         // 3. Trigger the docker engine
-        // const result = await executeJudgeJobSandbox(jobDir);
-
-        // return result;
-        return { success: true, message: 'Sandbox execution pending implementation'};
+        const result = await executeJudgeJobSandbox(jobDir);
+        return result;
     }
     catch (error) {
         console.error(`[JudgeHandler] Error on job ${jobId}:`, error);

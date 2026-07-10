@@ -1,5 +1,5 @@
 import { exec } from 'child_process';
-import { ExecutionResult, LanguageConfig } from '../types';
+import { PlaygroundJobSandboxResult, LanguageConfig } from '../types';
 
 const LANGUAGES: Record<string, LanguageConfig> = {
     cpp: {
@@ -18,7 +18,7 @@ export const getLanguageExtension = (language: string): string | null => {
 };
 
 // 2. Main function for execution engine
-export const executePlaygroundJobSandbox = (jobDir: string, language: string): Promise<ExecutionResult> => {
+export const executePlaygroundJobSandbox = (jobDir: string, language: string): Promise<PlaygroundJobSandboxResult> => {
     return new Promise((resolve, reject) => {
         const config = LANGUAGES[language];
 

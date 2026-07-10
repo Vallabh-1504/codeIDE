@@ -1,9 +1,9 @@
 import { Job } from 'bullmq';
-import { PlaygroundJobData, ExecutionResult } from '../types';
-import { createPlaygroundJobFiles, cleanupPlaygroundJobFiles } from '../services/PlaygroundFileService';
-import { executePlaygroundJobSandbox, getLanguageExtension } from '../services/ExecutionService';
+import { PlaygroundJobData, PlaygroundJobSandboxResult } from '../types';
+import { createPlaygroundJobFiles, cleanupPlaygroundJobFiles } from '../services/PlaygroundJobFileService';
+import { executePlaygroundJobSandbox, getLanguageExtension } from '../services/PlaygroundJobSandboxService';
 
-export const processPlaygroundJob = async (job: Job<PlaygroundJobData>): Promise<ExecutionResult> => {
+export const processPlaygroundJob = async (job: Job<PlaygroundJobData>): Promise<PlaygroundJobSandboxResult> => {
     const { code, language, stdin = '' } = job.data;
     const jobId = job.id || 'unknown-job';
 

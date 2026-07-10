@@ -2,7 +2,7 @@ import { Worker, Job } from 'bullmq';
 import { ENV } from '../config/env';
 import { redisConnection } from '../config/redis';
 import { JudgeJobData } from '../types';
-// import { processJudgeJob } from '../handlers/judgeHandler';
+import { processJudgeJob } from '../handlers/JudgeJobHandler';
 
 const QUEUE_NAME = ENV.PLAYGROUND_QUEUE_NAME;
 
@@ -11,7 +11,7 @@ export const setupJudgeWorker = () =>{
         QUEUE_NAME,
         async (job: Job<JudgeJobData>) => {
             // Pass the job payload straight to handler ("Controller")
-            // return await processJudgeJob(job);
+            return await processJudgeJob(job);
         },
         {
             connection: redisConnection as any,
