@@ -1,4 +1,4 @@
-import { setupWorker } from './queues/workerSetup';
+import { setupWorker } from './workers/PlaygroundWorkerSetup';
 import { redisConnection } from './config/redis';
 
 console.log("Worker server started, waiting for jobs");

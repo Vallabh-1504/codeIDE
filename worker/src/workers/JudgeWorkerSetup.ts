@@ -1,21 +1,21 @@
 import { Worker, Job } from 'bullmq';
 import { ENV } from '../config/env';
 import { redisConnection } from '../config/redis';
-import { processPlaygroundJob } from '../handlers/jobHandler';
-import { PlaygroundJobData } from '../types';
+import { JudgeJobData } from '../types';
+// import { processJudgeJob } from '../handlers/judgeHandler';
 
-const QUEUE_NAME = ENV.QUEUE_NAME
+const QUEUE_NAME = ENV.PLAYGROUND_QUEUE_NAME;
 
-export const setupWorker = () => {
-    const worker = new Worker<PlaygroundJobData>(
+export const setupJudgeWorker = () =>{
+    const worker = new Worker<JudgeJobData>(
         QUEUE_NAME,
-        async (job: Job<PlaygroundJobData>) => {
+        async (job: Job<JudgeJobData>) => {
             // Pass the job payload straight to handler ("Controller")
-            return await processPlaygroundJob(job);
+            // return await processJudgeJob(job);
         },
         {
             connection: redisConnection as any,
-            concurrency: 2, 
+            concurrency: 2,
         }
     );
 

@@ -10,7 +10,15 @@ export interface ExecutionResult{
     error?: string;
 }
 
-export interface  LanguageConfig{
+export interface LanguageConfig{
     extension: string,
     getCommand: (fileName: string, outName: string) => string;
+}
+
+export interface JudgeJobData{
+    jobType: 'run' | 'submit';
+    questionId: number;
+    language: 'cpp' | 'python';
+    code: string;
+    userId: string;
 }
