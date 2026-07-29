@@ -5,9 +5,13 @@ import { Server } from 'socket.io';
 
 import { ENV } from './config/env';
 import { connectDB } from './config/mongo';
+
 import playgroundRoutes from './routes/PlaygroundRoutes';
+import judgeRoutes from './routes/judgeRoutes';
+
 import { setupSocketHandlers } from './sockets/socketHandler';
 import { setupPlaygroundQueueListeners } from './queues/playgroundQueue';
+import { setupJudgeQueueListeners } from './queues/JudgeQueue';
 
 // 1. Initialize Express app
 const app = express();
@@ -23,6 +27,7 @@ app.get('/', (req: Request, res: Response) => {
 
 // 4. REST Routes
 app.use('/api/v1/playground', playgroundRoutes);
+app.use('/api/v1/judge', judgeRoutes);
 
 // 5. HTTP server and socket.io setup
 const server = http.createServer(app);
@@ -36,6 +41,7 @@ const io = new Server(server, {
 // 6. Initialize Handlers & Listeners
 setupSocketHandlers(io);
 setupPlaygroundQueueListeners(io);
+setupJudgeQueueListeners(io);
 
 // 7. Boot
 const startServer = async () => {
