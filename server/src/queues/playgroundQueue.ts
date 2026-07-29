@@ -2,7 +2,7 @@ import { Queue, QueueEvents } from 'bullmq';
 import { Server } from 'socket.io';
 import { ENV } from '../config/env';
 import { PlaygroundJobData } from '../types/index';
-// import { handlePlaygroundCompletion, handlePlaygroundFailure } from '../handlers/PlaygroundResultHandler';
+import { handlePlaygroundCompletion, handlePlaygroundFailure } from '../handlers/PlaygroundQueueHandler';
 import { redisConnection } from '../config/redis';
 
 const QUEUE_NAME = ENV.PLAYGROUND_QUEUE_NAME;
@@ -24,12 +24,12 @@ export const setupPlaygroundQueueListeners = (io: Server) => {
     });
 
     queueEvents.on('completed', async ({ jobId, returnvalue }: any) => {
-        // await handlePlaygroundCompletion(io, playgroundQueue, jobId, returnvalue);        
+        await handlePlaygroundCompletion(io, playgroundQueue, jobId, returnvalue);        
     });
 
 
     queueEvents.on('failed', async ({ jobId, failedReason }: any) => {
-        // await handlePlaygroundFailure(io, playgroundQueue, jobId, failedReason);    
+        await handlePlaygroundFailure(io, playgroundQueue, jobId, failedReason);    
         });
 };
 
