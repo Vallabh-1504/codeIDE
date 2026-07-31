@@ -6,7 +6,7 @@ import { PlaygroundJobData } from '../types';
 
 const QUEUE_NAME = ENV.PLAYGROUND_QUEUE_NAME;
 
-export const setupWorker = () => {
+export const setupPlaygroundWorker = () => {
     const worker = new Worker<PlaygroundJobData>(
         QUEUE_NAME,
         async (job: Job<PlaygroundJobData>) => {

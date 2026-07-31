@@ -10,6 +10,7 @@ export const executeJudgeJobSandbox = (jobDir: string): Promise<JudgeJobSandboxR
         const dockerCommand = `docker run --rm \
             --network none \
             --memory 512m \
+            --cpus 1.0 \
             -v "${jobDir}:/app" \
             cee-image \
             /bin/sh -c "python3 /app/runner.py"`;

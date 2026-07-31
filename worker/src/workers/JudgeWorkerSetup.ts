@@ -4,7 +4,7 @@ import { redisConnection } from '../config/redis';
 import { JudgeJobData } from '../types';
 import { processJudgeJob } from '../handlers/JudgeJobHandler';
 
-const QUEUE_NAME = ENV.PLAYGROUND_QUEUE_NAME;
+const QUEUE_NAME = ENV.JUDGE_QUEUE_NAME;
 
 export const setupJudgeWorker = () =>{
     const worker = new Worker<JudgeJobData>(
@@ -15,7 +15,7 @@ export const setupJudgeWorker = () =>{
         },
         {
             connection: redisConnection as any,
-            concurrency: 2,
+            concurrency: ENV.JUDGE_WORKER_CONCURRENCY,
         }
     );
 

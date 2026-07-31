@@ -1,19 +1,36 @@
-import { setupWorker } from './workers/PlaygroundWorkerSetup';
+import dotenv from 'dotenv';
+dotenv.config();
+
+import { setupPlaygroundWorker } from './workers/PlaygroundWorkerSetup';
+import { setupJudgeWorker } from './workers/JudgeWorkerSetup';
 import { redisConnection } from './config/redis';
+import mongoose from 'mongoose';
 
-console.log("Worker server started, waiting for jobs");
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/codeStudio';
 
-// 1. Initialize the BullMQ Worker
-const worker = setupWorker();
+console.log("Worker server starting...");
+
+// Initiailze MongoDB
+mongoose.connect(MONGO_URI);
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'error connecting to mongoDb'));
+db.once('open', () => console.log('mongoDB connected to worker server'));
+
+// Initialize the BullMQ Workers
+const Playgroundworker = setupPlaygroundWorker();
+const JudgeWorker = setupJudgeWorker();
 
 // Graceful shutdown management
 const gracefulShutdown = async (signal: string) => {
     console.log(`Received ${signal}, closing worker...`);
 
     // Stop accepting new jobs and finish the current ones
-    await worker.close();
+    await Promise.all([
+        Playgroundworker.close(),
+        JudgeWorker.close(),
+    ]);
 
-    // Sever the Redis connection cleanly
+    // close the Redis connection
     await redisConnection.quit();
 
     console.log('Worker closed. Exiting process');
