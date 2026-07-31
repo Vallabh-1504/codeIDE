@@ -40,7 +40,8 @@ export const processJudgeJob = async (job: Job<JudgeJobData>) => {
         
 
         // 2. Create isolated environment
-        const { jobDir }  = await createJudgeJobFiles(jobId, language, code, testCasesToEvaluate);
+        const fileData  = await createJudgeJobFiles(jobId, language, code, testCasesToEvaluate);
+        jobDir = fileData.jobDir;
 
         // 3. Trigger the docker engine
         const result = await executeJudgeJobSandbox(jobDir);
