@@ -28,6 +28,13 @@ export interface JudgeJobSandboxResult {
     verdicts: TestCaseVerdict[]; // Granular details for each test case
 }
 
+export interface PlaygroundJobSandboxResult{
+    success: boolean;
+    output: string;
+    error?: string;
+}
+
+
 export interface LanguageConfig{
     extension: string,
     getCommand: (fileName: string, outName: string) => string;

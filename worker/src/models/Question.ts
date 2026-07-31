@@ -10,10 +10,7 @@ export interface ISampleTestCase {
 export interface IQuestion extends Document{
 	questionId: Number;
 	title: string;
-	description: string;
-	inputFormat: string;
-	outputFormat: string;
-	constraints: string[];
+	content: string;
 	sampleTestCases: ISampleTestCase[];
 }
 
@@ -21,25 +18,14 @@ const QuestionSchema = new Schema<IQuestion>({
     questionId: {
         type: Number,
         required: true,
+        unique: true,
     },
     title: { 
         type: String, 
         required: true,
     },
-    description: { 
+    content: { 
         type: String, 
-        required: true,
-    },
-    inputFormat: {
-        type: String,
-        required: true,
-    },
-    outputFormat: {
-        type: String,
-        required: true,
-    },
-    constraints: {
-        type: [String],
         required: true,
     },
     sampleTestCases: [{

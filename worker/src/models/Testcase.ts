@@ -14,7 +14,7 @@ const TestCaseSchema = new Schema<ITestCase>({
         index: true 
     },
     input: {
-        type: Number,
+        type: String,
         required: true
     },
 
