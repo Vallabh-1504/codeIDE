@@ -2,9 +2,9 @@
 
 import dynamic from 'next/dynamic';
 
-const CodeEditor = dynamic(() => import('./CodeEditor'), {
+const CodeEditor = dynamic(() => import('./playground/PlaygroundEditor'), {
     ssr: false,
-    loading: () => <p className="text-white p-4">Loading Editor...</p>
+    loading: () => <p className="p-4 text-slate-500">Loading Editor...</p>
 });
 
 export default CodeEditor;
