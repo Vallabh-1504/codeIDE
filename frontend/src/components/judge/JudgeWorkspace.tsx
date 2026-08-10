@@ -134,45 +134,53 @@ const JudgeWorkspace: React.FC<JudgeWorkspaceProps> = ({ questionId }) => {
 
             <div className="flex grow p-4">
                 <Group orientation="horizontal">
-                    <Panel defaultSize={50} minSize={20} className="flex flex-col overflow-hidden rounded-md border border-slate-200 bg-white">
-                        <div className="flex border-b border-slate-200">
-                            {(["problem", "submissions"] as Tab[]).map((t) => (
-                                <button
-                                    key={t}
-                                    onClick={() => setTab(t)}
-                                    className={`px-4 py-2 text-sm font-medium capitalize ${
-                                        tab === t
-                                            ? "border-b-2 border-indigo-600 text-indigo-600"
-                                            : "text-slate-500 hover:text-slate-700"
-                                    }`}
-                                >
-                                    {t}
-                                </button>
-                            ))}
-                        </div>
-                        <div className="flex-1 overflow-hidden">
-                            {tab === "problem" ? (
-                                <ProblemPanel question={question} />
-                            ) : (
-                                <SubmissionHistory submissions={submissions} />
-                            )}
-                        </div>
+                    <Panel defaultSize={50} minSize={20} className="flex flex-col">
+                        <Group orientation="vertical">
+                            <Panel defaultSize={50} minSize={20} className="flex flex-col overflow-hidden rounded-md border border-slate-200 bg-white">
+                                <div className="flex border-b border-slate-200">
+                                    {(["problem", "submissions"] as Tab[]).map((t) => (
+                                        <button
+                                            key={t}
+                                            onClick={() => setTab(t)}
+                                            className={`px-4 py-2 text-sm font-medium capitalize ${
+                                                tab === t
+                                                    ? "border-b-2 border-indigo-600 text-indigo-600"
+                                                    : "text-slate-500 hover:text-slate-700"
+                                            }`}
+                                        >
+                                            {t}
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="flex-1 overflow-hidden">
+                                    {tab === "problem" ? (
+                                        <ProblemPanel question={question} />
+                                    ) : (
+                                        <SubmissionHistory submissions={submissions} />
+                                    )}
+                                </div>
+                            </Panel>
+
+                            <Separator className="h-4 flex items-center justify-center cursor-row-resize group">
+                                <div className="w-8 h-1 rounded-full bg-slate-300 group-hover:bg-slate-400 transition-colors" />
+                            </Separator>
+
+                            <Panel defaultSize={50} minSize={20} className="flex flex-col">
+                                <VerdictPanel status={status} result={result} jobError={jobError} />
+                            </Panel>
+                        </Group>
                     </Panel>
 
                     <Separator className="w-4 flex items-center justify-center cursor-col-resize group">
                         <div className="h-8 w-1 rounded-full bg-slate-300 group-hover:bg-slate-400 transition-colors" />
                     </Separator>
 
-                    <Panel defaultSize={50} minSize={20} className="flex flex-col">
-                        <div className="h-[50%] overflow-hidden rounded-md border border-slate-200">
-                            <EditorPane
-                                language={language}
-                                value={codeByLanguage[language]}
-                                onChange={(v) => setCodeByLanguage((prev) => ({ ...prev, [language]: v || "" }))}
-                            />
-                        </div>
-
-                        <VerdictPanel status={status} result={result} jobError={jobError} />
+                    <Panel defaultSize={50} minSize={20} className="flex flex-col overflow-hidden rounded-md border border-slate-200">
+                        <EditorPane
+                            language={language}
+                            value={codeByLanguage[language]}
+                            onChange={(v) => setCodeByLanguage((prev) => ({ ...prev, [language]: v || "" }))}
+                        />
                     </Panel>
                 </Group>
             </div>

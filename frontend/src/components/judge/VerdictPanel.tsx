@@ -99,7 +99,7 @@ const VerdictPanel: React.FC<VerdictPanelProps> = ({ status, result, jobError })
     };
 
     return (
-        <div className="mt-4 flex h-[50%] flex-col overflow-auto rounded-md border border-slate-200 bg-white p-3">
+        <div className="flex h-full flex-col overflow-auto rounded-md border border-slate-200 bg-white p-3">
             <h3 className="mb-2 border-b border-slate-100 pb-1 text-sm font-medium text-slate-500">Result</h3>
             {renderBody()}
         </div>
