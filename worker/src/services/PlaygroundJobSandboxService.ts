@@ -5,7 +5,7 @@ const LANGUAGES: Record<string, LanguageConfig> = {
     cpp: {
         extension: 'cpp',
         // compile output to 'out', then run it.
-        getCommand: () => `g++ -O2 /app/main.cpp - o /app/out && /app/out`
+        getCommand: () => `g++ -O2 /app/main.cpp -o /app/out && /app/out`
     },
     python: {
         extension: 'py',
