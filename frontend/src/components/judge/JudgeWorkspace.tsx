@@ -23,6 +23,18 @@ interface JudgeWorkspaceProps {
 
 type Tab = "problem" | "submissions";
 
+const getInitialCode = (qId: number): Record<Language, string> => {
+    if (typeof window === "undefined") return JUDGE_TEMPLATES;
+    
+    const savedCpp = localStorage.getItem(`codeStudio_q${qId}_cpp`);
+    const savedPython = localStorage.getItem(`codeStudio_q${qId}_python`);
+    
+    return {
+        cpp: savedCpp !== null ? savedCpp : JUDGE_TEMPLATES.cpp,
+        python: savedPython !== null ? savedPython : JUDGE_TEMPLATES.python,
+    };
+};
+
 const JudgeWorkspace: React.FC<JudgeWorkspaceProps> = ({ questionId }) => {
     const [question, setQuestion] = useState<Question | null>(null);
     const [loadError, setLoadError] = useState<string | null>(null);
@@ -30,7 +42,7 @@ const JudgeWorkspace: React.FC<JudgeWorkspaceProps> = ({ questionId }) => {
 
     const [connected, setConnected] = useState(false);
     const [language, setLanguage] = useState<Language>("cpp");
-    const [codeByLanguage, setCodeByLanguage] = useState<Record<Language, string>>(JUDGE_TEMPLATES);
+    const [codeByLanguage, setCodeByLanguage] = useState<Record<Language, string>>(() => getInitialCode(questionId));
     const [status, setStatus] = useState<RunStatus>("idle");
     const [activeJobType, setActiveJobType] = useState<JobType | null>(null);
     const [result, setResult] = useState<JudgeJobSandboxResult>();
@@ -55,6 +67,8 @@ const JudgeWorkspace: React.FC<JudgeWorkspaceProps> = ({ questionId }) => {
         getSubmissions(anonIdRef.current, questionId)
             .then(setSubmissions)
             .catch(() => setSubmissions([]));
+
+        setCodeByLanguage(getInitialCode(questionId));
     }, [questionId]);
 
     useEffect(() => {
@@ -179,7 +193,11 @@ const JudgeWorkspace: React.FC<JudgeWorkspaceProps> = ({ questionId }) => {
                         <EditorPane
                             language={language}
                             value={codeByLanguage[language]}
-                            onChange={(v) => setCodeByLanguage((prev) => ({ ...prev, [language]: v || "" }))}
+                            onChange={(v) => {
+                                const newCode = v || "";
+                                setCodeByLanguage((prev) => ({ ...prev, [language]: newCode }));
+                                localStorage.setItem(`codeStudio_q${questionId}_${language}`, newCode);
+                            }}
                         />
                     </Panel>
                 </Group>
