@@ -7,6 +7,7 @@ import { WebsocketProvider } from "y-websocket";
 import { MonacoBinding } from "y-monaco";
 import { Socket } from "socket.io-client";
 import { isAxiosError } from "axios";
+import { Group, Panel, Separator } from "react-resizable-panels";
 
 import EditorPane from "@/components/shared/EditorPane";
 import Toolbar from "./Toolbar";
@@ -133,15 +134,21 @@ const PlaygroundEditor: React.FC<PlaygroundEditorProps> = ({ roomId }) => {
                 onRun={handleRun}
             />
 
-            <div className="flex grow gap-4 p-4">
-                <div className="w-1/2 overflow-hidden rounded-md border border-slate-200">
-                    <EditorPane language={language} onMount={handleEditorDidMount} />
-                </div>
+            <div className="flex grow p-4">
+                <Group orientation="horizontal">
+                    <Panel defaultSize={50} minSize={20} className="overflow-hidden rounded-md border border-slate-200">
+                        <EditorPane language={language} onMount={handleEditorDidMount} />
+                    </Panel>
 
-                <div className="flex w-1/2 flex-col">
-                    <InputPanel value={stdin} onChange={setStdin} />
-                    <OutputPanel status={status} output={output} error={error} />
-                </div>
+                    <Separator className="w-4 flex items-center justify-center cursor-col-resize group">
+                        <div className="h-8 w-1 rounded-full bg-slate-300 group-hover:bg-slate-400 transition-colors" />
+                    </Separator>
+
+                    <Panel defaultSize={50} minSize={20} className="flex flex-col">
+                        <InputPanel value={stdin} onChange={setStdin} />
+                        <OutputPanel status={status} output={output} error={error} />
+                    </Panel>
+                </Group>
             </div>
         </div>
     );

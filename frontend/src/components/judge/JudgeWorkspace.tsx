@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Socket } from "socket.io-client";
 import { isAxiosError } from "axios";
+import { Group, Panel, Separator } from "react-resizable-panels";
 
 import EditorPane from "@/components/shared/EditorPane";
 import JudgeToolbar from "./JudgeToolbar";
@@ -131,43 +132,49 @@ const JudgeWorkspace: React.FC<JudgeWorkspaceProps> = ({ questionId }) => {
                 onSubmit={() => runJob("submit")}
             />
 
-            <div className="flex grow gap-4 p-4">
-                <div className="flex w-1/2 flex-col overflow-hidden rounded-md border border-slate-200 bg-white">
-                    <div className="flex border-b border-slate-200">
-                        {(["problem", "submissions"] as Tab[]).map((t) => (
-                            <button
-                                key={t}
-                                onClick={() => setTab(t)}
-                                className={`px-4 py-2 text-sm font-medium capitalize ${
-                                    tab === t
-                                        ? "border-b-2 border-indigo-600 text-indigo-600"
-                                        : "text-slate-500 hover:text-slate-700"
-                                }`}
-                            >
-                                {t}
-                            </button>
-                        ))}
-                    </div>
-                    <div className="flex-1 overflow-hidden">
-                        {tab === "problem" ? (
-                            <ProblemPanel question={question} />
-                        ) : (
-                            <SubmissionHistory submissions={submissions} />
-                        )}
-                    </div>
-                </div>
+            <div className="flex grow p-4">
+                <Group orientation="horizontal">
+                    <Panel defaultSize={50} minSize={20} className="flex flex-col overflow-hidden rounded-md border border-slate-200 bg-white">
+                        <div className="flex border-b border-slate-200">
+                            {(["problem", "submissions"] as Tab[]).map((t) => (
+                                <button
+                                    key={t}
+                                    onClick={() => setTab(t)}
+                                    className={`px-4 py-2 text-sm font-medium capitalize ${
+                                        tab === t
+                                            ? "border-b-2 border-indigo-600 text-indigo-600"
+                                            : "text-slate-500 hover:text-slate-700"
+                                    }`}
+                                >
+                                    {t}
+                                </button>
+                            ))}
+                        </div>
+                        <div className="flex-1 overflow-hidden">
+                            {tab === "problem" ? (
+                                <ProblemPanel question={question} />
+                            ) : (
+                                <SubmissionHistory submissions={submissions} />
+                            )}
+                        </div>
+                    </Panel>
 
-                <div className="flex w-1/2 flex-col">
-                    <div className="h-[50%] overflow-hidden rounded-md border border-slate-200">
-                        <EditorPane
-                            language={language}
-                            value={codeByLanguage[language]}
-                            onChange={(v) => setCodeByLanguage((prev) => ({ ...prev, [language]: v || "" }))}
-                        />
-                    </div>
+                    <Separator className="w-4 flex items-center justify-center cursor-col-resize group">
+                        <div className="h-8 w-1 rounded-full bg-slate-300 group-hover:bg-slate-400 transition-colors" />
+                    </Separator>
 
-                    <VerdictPanel status={status} result={result} jobError={jobError} />
-                </div>
+                    <Panel defaultSize={50} minSize={20} className="flex flex-col">
+                        <div className="h-[50%] overflow-hidden rounded-md border border-slate-200">
+                            <EditorPane
+                                language={language}
+                                value={codeByLanguage[language]}
+                                onChange={(v) => setCodeByLanguage((prev) => ({ ...prev, [language]: v || "" }))}
+                            />
+                        </div>
+
+                        <VerdictPanel status={status} result={result} jobError={jobError} />
+                    </Panel>
+                </Group>
             </div>
         </div>
     );
