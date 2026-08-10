@@ -18,20 +18,3 @@ You must handle input and output via standard I/O.
 * $1 \le N \le 2 \times 10^4$
 * $-1000 \le \text{nums}[i] \le 1000$
 * $-10^7 \le K \le 10^7$
-
-### Example
-
-**Input:**
-```text
-2
-3 2
-1 1 1
-3 3
-1 2 3
-```
-
-**Output:**
-```text
-2
-2
-```

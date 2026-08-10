@@ -1,0 +1,49 @@
+Progress: [50/50] | Latest Verdict: Time Limit Exceeded 
+
+📊 --- BENCHMARK RESULTS ---
+Total Wall-Clock Time : 119.00 seconds
+Throughput (TPS)      : 0.42 jobs/sec
+Average Job Latency   : 3.534 seconds
+
+🛡️ --- RESILIENCE BREAKDOWN ---
+Valid Executions (AC) : 16
+Caught TLEs           : 13
+Caught Segfaults/REs  : 21
+System Crashes        : 0 (Target is 0)
+
+____________________________________________________________________________________________________
+
+Queuing 60 AC jobs (30 C++ / 30 Python)...
+
+[Redis] redis Connected
+All jobs queued. Waiting for workers...
+
+Progress: [60/60]  |  E2E: 36807ms 
+
+══════════════════════════════════════════════
+  📊  AC THROUGHPUT BENCHMARK
+══════════════════════════════════════════════
+  Total Jobs         : 60
+  Wall-Clock Time    : 36.90s
+  Throughput (TPS)   : 1.63 jobs/sec
+
+  ⏱   END-TO-END LATENCY  (enqueue → result ready)
+  ─────────────────────────────────────────────
+  Average            : 19559ms
+  P50 (median)       : 19049ms
+  P95                : 35658ms
+  P99                : 36807ms
+  Best               : 2058ms
+  Worst              : 36807ms
+
+  🐳  SANDBOX EXECUTION TIME  (runner.py internal)
+  ─────────────────────────────────────────────
+  Average            : 423ms
+  P50                : 294ms
+  P95                : 819ms
+  Infrastructure     : ~19136ms  (E2E minus sandbox)
+
+══════════════════════════════════════════════
+
+____________________________________________________________________________________________________
+
