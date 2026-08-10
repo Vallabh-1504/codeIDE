@@ -10,7 +10,7 @@ export type JudgeStatus =
     | "Compile Error"
     | "Internal Error";
 
-export type VerdictStatus = "AC" | "WA" | "TLE" | "RE";
+export type VerdictStatus = "AC" | "WA" | "TLE" | "RE" | "CE";
 
 export interface SampleTestCase {
     input: string;

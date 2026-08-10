@@ -100,7 +100,7 @@ class JudgeOrchestrator:
     def fail_submission(self, status: str, error_details: str):
         self.results["status"] = status
         self.results["verdicts"].append({
-            "status": status,
+            "status": "CE" if status == "Compile Error" else status,
             "time": 0,
             "errorDetails": error_details
         })

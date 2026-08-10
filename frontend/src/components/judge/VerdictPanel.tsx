@@ -24,6 +24,7 @@ const VERDICT_BADGE: Record<VerdictStatus, string> = {
     WA: "bg-red-100 text-red-700",
     TLE: "bg-amber-100 text-amber-700",
     RE: "bg-red-100 text-red-700",
+    CE: "bg-red-100 text-red-700",
 };
 
 const VerdictPanel: React.FC<VerdictPanelProps> = ({ status, result, jobError }) => {

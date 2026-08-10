@@ -21,6 +21,7 @@ const VERDICT_COLOR: Record<Submission["verdicts"][number]["status"], string> = 
     WA: "text-red-700",
     TLE: "text-amber-700",
     RE: "text-red-700",
+    CE: "text-red-700",
 };
 
 const SubmissionHistory: React.FC<SubmissionHistoryProps> = ({ submissions }) => {

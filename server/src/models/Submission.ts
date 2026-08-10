@@ -14,7 +14,7 @@ export interface ISubmission extends Document {
 }
 
 const TestCaseVerdictSchema = new Schema<TestCaseVerdict>({
-    status: { type: String, enum: ['AC', 'WA', 'TLE', 'RE'], required: true },
+    status: { type: String, enum: ['AC', 'WA', 'TLE', 'RE', 'CE'], required: true },
     time: { type: Number, required: true },
     expectedOutput: { type: String },
     actualOutput: { type: String },

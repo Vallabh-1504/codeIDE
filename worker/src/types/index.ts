@@ -41,7 +41,7 @@ export interface LanguageConfig{
 }
 
 export interface TestCaseVerdict {
-    status: 'AC' | 'WA' | 'TLE' | 'RE';
+    status: 'AC' | 'WA' | 'TLE' | 'RE' | 'CE';
     time: number;
     expectedOutput?: string; // Only populated for 'run' / sample cases
     actualOutput?: string;   // Only populated for 'run' / sample cases
