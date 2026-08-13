@@ -1,5 +1,6 @@
 import { exec } from 'child_process';
 import { PlaygroundJobSandboxResult, LanguageConfig } from '../types';
+import { buildDockerCommand } from '../utils/dockerUtils';
 
 const LANGUAGES: Record<string, LanguageConfig> = {
     cpp: {
@@ -32,14 +33,12 @@ export const executePlaygroundJobSandbox = (jobDir: string, language: string): P
 
         const runCommand = config.getCommand("/app", "/app");
 
-        // mount the isolated jobDir, and not whole temp folder
-        // 2. Construct Docker Command (inject the stdin via shell redirection `<`)
-        const dockerCommand = `docker run --rm \
-            --network none \
-            --memory 100m \
-            -v "${jobDir}:/app" \
-            cee-image \
-            /bin/sh -c "${runCommand} < /app/input.txt"`;
+        const dockerCommand = buildDockerCommand({
+            jobDir: jobDir,
+            memory: '100m',
+            cpus: '1.0',
+            containerCommand: `${runCommand} < /app/input.txt`
+        });
 
         // 3. Execute Docker command with timeout of 5 sec, timeout to check for TLE error
         exec(dockerCommand, {timeout: 5000}, (error, stdout, stderr) => { 

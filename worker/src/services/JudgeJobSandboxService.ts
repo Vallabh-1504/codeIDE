@@ -2,18 +2,16 @@ import { exec } from 'child_process';
 import fs from 'fs/promises';
 import path from 'path';
 import { JudgeJobSandboxResult } from '../types';
+import { buildDockerCommand } from '../utils/dockerUtils';
 
 export const executeJudgeJobSandbox = (jobDir: string): Promise<JudgeJobSandboxResult> => {
     return new Promise((resolve, reject) => {
-        // 1. Construct the Docker Command
-        // mount the specific job directory and execute runner.py
-        const dockerCommand = `docker run --rm \
-            --network none \
-            --memory 512m \
-            --cpus 1.0 \
-            -v "${jobDir}:/app" \
-            cee-image \
-            /bin/sh -c "python3 /app/runner.py"`;
+        const dockerCommand = buildDockerCommand({
+            jobDir: jobDir,
+            memory: '512m',
+            cpus: '1.0',
+            containerCommand: 'python3 /app/runner.py'
+        });
 
         // 2. Execute with a Node-level safety timeout
         // 60-second limit to protect the worker server
