@@ -101,13 +101,25 @@ def generate_memory_pressure_cases():
 def main():
     print("Generating hidden test cases...")
     
-    # Compile all distinct case types into the final array
-    hidden_cases = [
-        generate_baseline_cases(),
-        generate_edge_cases(),
-        generate_stress_cases(),
-        generate_memory_pressure_cases()
-    ]
+    # Compile multiple blocks to easily exceed 100+ total test cases
+    # while keeping individual block sizes (T) manageable for the sandbox.
+    hidden_cases = []
+    
+    # 10 blocks of 10 baseline cases = 100 test cases
+    for _ in range(10):
+        hidden_cases.append(generate_baseline_cases())
+        
+    # 2 blocks of 5 edge cases = 10 test cases
+    hidden_cases.append(generate_edge_cases())
+    hidden_cases.append(generate_edge_cases()) # They contain some randomness if we add it, but even static is fine
+    
+    # 3 blocks of 3 stress cases = 9 test cases
+    for _ in range(3):
+        hidden_cases.append(generate_stress_cases())
+        
+    # 3 blocks of 2 memory pressure cases = 6 test cases
+    for _ in range(3):
+        hidden_cases.append(generate_memory_pressure_cases())
     
     # Get the absolute path for the output file, ensuring it's in the same directory as the script
     script_dir = os.path.dirname(os.path.abspath(__file__))
