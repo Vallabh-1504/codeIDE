@@ -11,4 +11,5 @@ export const ENV = {
 
     PLAYGROUND_QUEUE_NAME : "playground-execution-queue",
     JUDGE_QUEUE_NAME: "judge-execution-queue",
+    FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
 };

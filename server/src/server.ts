@@ -17,8 +17,12 @@ import { setupJudgeQueueListeners } from './queues/JudgeQueue';
 const app = express();
 
 // 2. Initialize middleware
+const allowedOrigins = [ENV.FRONTEND_URL, 'http://localhost:5173', 'http://localhost:3000'];
+
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: allowedOrigins
+}));
 
 // 3. Health Check
 app.get('/', (req: Request, res: Response) => {
@@ -33,7 +37,7 @@ app.use('/api/v1/judge', judgeRoutes);
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "*",
+        origin: allowedOrigins,
         methods: ["GET", "POST"],
     }
 });
