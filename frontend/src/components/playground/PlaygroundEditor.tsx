@@ -36,6 +36,17 @@ const PlaygroundEditor: React.FC<PlaygroundEditorProps> = ({ roomId }) => {
     const socketRef = useRef<Socket | null>(null);
     const lastJobIdRef = useRef<string | null>(null);
     const yjsCleanupRef = useRef<(() => void) | null>(null);
+    const ymapRef = useRef<Y.Map<any> | null>(null);
+    const languageRef = useRef(language);
+
+    useEffect(() => {
+        languageRef.current = language;
+    }, [language]);
+
+    const handleLanguageChange = (newLang: Language) => {
+        setLanguage(newLang);
+        ymapRef.current?.set("language", newLang);
+    };
 
     // Socket connection for run status & results
     useEffect(() => {
@@ -67,15 +78,27 @@ const PlaygroundEditor: React.FC<PlaygroundEditorProps> = ({ roomId }) => {
 
     // Yjs binding for collaborative editing
     const handleEditorDidMount: OnMount = (editor) => {
+        yjsCleanupRef.current?.();
+
         editorRef.current = editor;
 
         const ydoc = new Y.Doc();
         const provider = new WebsocketProvider(YJS_URL, roomId, ydoc);
         const ytext = ydoc.getText("monaco");
+        const ymap = ydoc.getMap("metadata");
+        ymapRef.current = ymap;
+
+        ymap.observe(() => {
+            const syncedLang = ymap.get("language") as Language | undefined;
+            if (syncedLang && syncedLang !== languageRef.current) {
+                setLanguage(syncedLang);
+            }
+        });
 
         provider.on("sync", (isSynced: boolean) => {
             if (isSynced && ytext.length === 0) {
-                ytext.insert(0, DEFAULT_TEMPLATES[language]);
+                ytext.insert(0, DEFAULT_TEMPLATES[languageRef.current]);
+                ymap.set("language", languageRef.current);
             }
         });
 
@@ -85,6 +108,7 @@ const PlaygroundEditor: React.FC<PlaygroundEditorProps> = ({ roomId }) => {
             binding.destroy();
             provider.disconnect();
             ydoc.destroy();
+            ymapRef.current = null;
         };
     };
 
@@ -129,7 +153,7 @@ const PlaygroundEditor: React.FC<PlaygroundEditorProps> = ({ roomId }) => {
                 roomId={roomId}
                 connected={connected}
                 language={language}
-                onLanguageChange={setLanguage}
+                onLanguageChange={handleLanguageChange}
                 status={status}
                 onRun={handleRun}
             />
