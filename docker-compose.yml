@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    restart: always
+
+  yjs:
+    image: node:20-alpine
+    command: sh -c "npm install -g y-websocket && node /usr/local/lib/node_modules/y-websocket/bin/server.js"
+    ports:
+      - "1234:1234"
+    environment:
+      - PORT=1234
+      - HOST=0.0.0.0
+    restart: always
+
+  server:
+    build: 
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MONGO_URI=${MONGO_URI}
+    depends_on:
+      - redis
+    restart: always
+
+  worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile.prod
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MONGO_URI=${MONGO_URI}
+      - HOST_TEMP_DIR=${PWD}/worker/temp
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./worker/temp:/app/temp
+    depends_on:
+      - redis
+    restart: always

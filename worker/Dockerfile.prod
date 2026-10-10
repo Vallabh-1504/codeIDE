@@ -1,0 +1,19 @@
+FROM node:20-alpine
+
+# Install Docker CLI so the worker can spawn containers
+RUN apk add --no-cache docker-cli
+
+WORKDIR /app
+
+# Copy package.json and install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Build TypeScript
+RUN npm run build
+
+# Start the worker
+CMD ["npm", "start"]
