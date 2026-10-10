@@ -3,7 +3,7 @@ import { ENV } from '../src/config/env';
 import { redisConnection } from '../src/config/redis';
 
 const QUEUE_NAME = ENV.JUDGE_QUEUE_NAME || 'judge-execution-queue';
-const TOTAL_JOBS = 50;
+const TOTAL_JOBS = 100;
 
 const cppOptimizedCode = `
 #include <iostream>
@@ -102,16 +102,56 @@ while True:
     arr.append(' ' * 10**6)
 `;
 
+// NEW EDGE CASES
+const cppForkBombCode = `
+#include <unistd.h>
+int main() {
+    // Tests --pids-limit 50
+    while(1) fork();
+    return 0;
+}
+`;
 
+const pythonNetworkAttackCode = `
+# Tests --network none
+import urllib.request
+try:
+    urllib.request.urlopen("http://example.com", timeout=2)
+except Exception:
+    pass
+`;
 
+const pythonDiskExhaustionCode = `
+# Tests --ulimit fsize=10000000 (10MB limit)
+import os
+try:
+    with open("huge_file.txt", "w") as f:
+        while True:
+            f.write("A" * 1024 * 1024)
+except Exception:
+    pass
+`;
 
-// Assume the code strings from Step 1 are stored in these variables
+const cppFileTamperingCode = `
+#include <stdlib.h>
+int main() {
+    // Attempt to tamper with mounted runner/results files
+    system("rm -rf /app/*");
+    system("echo 'hacked' > /app/results.json");
+    return 0;
+}
+`;
+
 const payloads = [
     { type: 'Optimized C++', lang: 'cpp', code: cppOptimizedCode },
     { type: 'Optimized Python', lang: 'python', code: pythonOptimizedCode },
     { type: 'Segfault C++', lang: 'cpp', code: cppSegfaultCode },
     { type: 'Infinite Loop C++', lang: 'cpp', code: cppInfiniteLoopCode },
-    { type: 'Memory Leak Python', lang: 'python', code: pythonMemoryLeakCode }
+    { type: 'Memory Leak Python', lang: 'python', code: pythonMemoryLeakCode },
+    { type: 'Fork Bomb C++', lang: 'cpp', code: cppForkBombCode },
+    { type: 'Network Exfiltration Python', lang: 'python', code: pythonNetworkAttackCode },
+    { type: 'Disk Exhaustion Python', lang: 'python', code: pythonDiskExhaustionCode },
+    { type: 'File Tampering C++', lang: 'cpp', code: cppFileTamperingCode }
 ];
 
 const runChaosBenchmark = async () => {
@@ -156,11 +196,11 @@ const runChaosBenchmark = async () => {
             const avgLatency = latencies.reduce((a, b) => a + b, 0) / latencies.length;
             const tps = TOTAL_JOBS / wallClockTime;
 
-            console.log('\n\n📊 --- BENCHMARK RESULTS ---');
+            console.log('\n\n--- BENCHMARK RESULTS ---');
             console.log(`Total Wall-Clock Time : ${wallClockTime.toFixed(2)} seconds`);
             console.log(`Throughput (TPS)      : ${tps.toFixed(2)} jobs/sec`);
             console.log(`Average Job Latency   : ${avgLatency.toFixed(3)} seconds`);
-            console.log(`\n🛡️ --- RESILIENCE BREAKDOWN ---`);
+            console.log(`\n --- RESILIENCE BREAKDOWN ---`);
             console.log(`Valid Executions (AC) : ${stats.AC}`);
             console.log(`Caught TLEs           : ${stats.TLE}`);
             console.log(`Caught Segfaults/REs  : ${stats.RE}`);

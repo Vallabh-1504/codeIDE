@@ -14,7 +14,7 @@ export const buildDockerCommand = (options: DockerCommandOptions): string => {
         jobDir, 
         memory = '256m', 
         cpus = '1.0', 
-        image = 'codeStudio-image', 
+        image = 'codestudio-image',
         containerCommand 
     } = options;
 
@@ -28,14 +28,16 @@ export const buildDockerCommand = (options: DockerCommandOptions): string => {
         mountPath = `${process.env.HOST_TEMP_DIR}/${jobId}`;
     }
 
-    return `docker run --rm \\
-        --init \\
-        --network none \\
-        --memory ${memory} \\
-        --cpus ${cpus} \\
-        --pids-limit 50 \\
-        --ulimit fsize=10000000 \\
-        -v "${mountPath}:/app" \\
-        ${image} \\
+    const dockerCommand = `docker run --rm \
+        --init \
+        --network none \
+        --memory ${memory} \
+        --cpus ${cpus} \
+        --pids-limit 50 \
+        --ulimit fsize=10000000 \
+        -v "${mountPath}:/app" \
+        ${image} \
         /bin/sh -c "${containerCommand}"`;
+
+    return dockerCommand;
 };

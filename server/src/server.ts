@@ -6,7 +6,7 @@ import { Server } from 'socket.io';
 import { ENV } from './config/env';
 import { connectDB } from './config/mongo';
 
-import playgroundRoutes from './routes/PlaygroundRoutes';
+import playgroundRoutes from './routes/playgroundRoutes';
 import judgeRoutes from './routes/judgeRoutes';
 
 import { setupSocketHandlers } from './sockets/socketHandler';

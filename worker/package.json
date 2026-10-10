@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc -b",
+    "build": "tsc -b && node -e \"require('fs').cpSync('src/scripts', 'dist/src/scripts', {recursive:true})\"",
     "start": "node dist/src/index.js",
     "dev": "ts-node src/index.ts",
-    "build:runner": "docker build -t cee-image .",
+    "build:runner": "docker build -t codestudio-image .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

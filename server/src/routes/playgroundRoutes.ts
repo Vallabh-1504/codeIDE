@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { runCodeController, getJobStatusController } from '../controllers/PlaygroundController';
+import { runCodeController, getJobStatusController } from '../controllers/playgroundController';
 
 const router = Router();
 
